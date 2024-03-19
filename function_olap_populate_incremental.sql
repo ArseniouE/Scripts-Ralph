@@ -58,7 +58,6 @@ set max_parallel_workers = 32;
 set parallel_leader_participation = on;
 set default_statistics_target = 500;
 
-
 --JIT
 set jit = on;
 set jit_above_cost = 100000;
@@ -72,7 +71,7 @@ DO $$
 DECLARE
 varprevsuccessdate TIMESTAMP ;
 BEGIN
-
+--
 CREATE TABLE IF NOT EXISTS olapts.refreshhistory (
 tablename VARCHAR,
 asofdate TIMESTAMP WITHOUT TIME ZONE DEFAULT (current_setting('myvariables.popdate')::timestamp at time zone 'utc'),
@@ -226,7 +225,6 @@ raise notice '% - Step abaddressflag_idx - part a start', clock_timestamp();
 
 CREATE INDEX IF NOT EXISTS abaddressflag_idx ON olapts.abaddressflag (id_);
 CREATE INDEX IF NOT EXISTS abaddressflag_idx2 ON olapts.abaddressflag (pkid_,versionid_);
-
 
 raise notice '% - Step abaddressflag_idx - part a end', clock_timestamp(); 
 
@@ -477,7 +475,6 @@ raise notice '% - Step abentityofficers_idx - part a start', clock_timestamp();
 CREATE INDEX IF NOT EXISTS abentityofficers_idx ON olapts.abentityofficers (dimentityofficersid_);
 CREATE INDEX IF NOT EXISTS abentityofficers_idx2 ON olapts.abentityofficers (pkid_,versionid_);
 
-
 raise notice '% - Step abentityofficers_idx - part a end', clock_timestamp(); 
 END IF;
 
@@ -523,7 +520,6 @@ raise notice '% - Step abentityofficersflag_idx - part a start', clock_timestamp
 
 CREATE INDEX IF NOT EXISTS abentityofficersflag_idx ON olapts.abentityofficersflag (id_);
 CREATE INDEX IF NOT EXISTS abentityofficersflag_idx2 ON olapts.abentityofficersflag (pkid_,versionid_);
-
 
 raise notice '% - Step abentityofficersflag_idx - part a end', clock_timestamp(); 
 
@@ -875,7 +871,7 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTENTITY') T
 	jsondoc_->>'EnterpriseValueToTotalDebt' enterprisevaluetototaldebt,
 	jsondoc_->>'ExpiryDate' expirydate,
 	jsondoc_->>'ValuationMethodology' valuationmethodology,
-	jsondoc_->>'Jurisdiction' jurisdiction,																								
+	jsondoc_->>'Jurisdiction' jurisdiction,
 	--not in tenant
 	jsondoc_->>'Bankruptcy' bankruptcy,
 	jsondoc_->>'GovernmentBailoutOffirm' governmentbailoutoffirm,
@@ -1007,7 +1003,7 @@ ELSE
 	jsondoc_->>'EnterpriseValueToTotalDebt' enterprisevaluetototaldebt,
 	jsondoc_->>'ExpiryDate' expirydate,
 	jsondoc_->>'ValuationMethodology' valuationmethodology,
-	jsondoc_->>'Jurisdiction' jurisdiction,																								 
+	jsondoc_->>'Jurisdiction' jurisdiction,	
 	--not in tenant
 	jsondoc_->>'Bankruptcy' bankruptcy,
 	jsondoc_->>'GovernmentBailoutOffirm' governmentbailoutoffirm,
@@ -1047,7 +1043,6 @@ ELSE
 	CREATE INDEX IF NOT EXISTS abfactentity_idx_pkid_hash ON olapts.abfactentity USING hash (pkid_);
 	CREATE INDEX IF NOT EXISTS abfactentity_idx_versionid_hash ON olapts.abfactentity USING hash (versionid_);
 	CREATE INDEX IF NOT EXISTS abfactentity_idx_btree ON olapts.abfactentity (pkid_,entityid,versionid_,sourcepopulateddate_) include(gc18,cdicode,systemid,isvalid_,isdeleted_,isvisible_,islatestversion_,createdby_,createddate_,updatedby_,updateddate_,sourcepopulatedby_,wfid_);
-
 
 	raise notice '% - Step abfactentity_idx - part a end', clock_timestamp(); 
 
@@ -1471,7 +1466,6 @@ ELSE
 	CREATE INDEX IF NOT EXISTS abhiststmtbalance_idx_pkid_gin ON olapts.abhiststmtbalance USING GIN (id_,pkid_,financialid,statementid,versionid_,wfid_);
 	CREATE INDEX IF NOT EXISTS abhiststmtbalance_idx_date_brin ON olapts.abhiststmtbalance USING BRIN (sourcepopulateddate_);
 	CREATE INDEX IF NOT EXISTS abhiststmtbalance_idx_pkid_btree_ops ON olapts.abhiststmtbalance ((id_) varchar_pattern_ops,(pkid_),financialid,statementid,accountid,sourcepopulateddate_) include (versionid_,originrounding,historicalstatementid_,v_histstmtbalancelatestid_,isdeleted_,isvalid_,islatestversion_,isvisible_,sourcepopulatedby_,createdby_,createddate_,updatedby_,updateddate_,wfid_);
-
 
 	raise notice '% - Step abhiststmtbalance_idx - part a end', clock_timestamp(); 
 END IF;
@@ -4797,7 +4791,7 @@ DROP INDEX if exists olapts.abentityrating_idx;
 DROP INDEX if exists olapts.abentityrating_idx2;
 
 CREATE INDEX IF NOT EXISTS abentityrating_idx ON olapts.abentityrating (factentityratingid_,wfid_);
-CREATE INDEX IF NOT EXISTS abentityrating_idx2 ON olapts.abentityrating (pkid_,versionid_,wfid);	
+CREATE INDEX IF NOT EXISTS abentityrating_idx2 ON olapts.abentityrating (pkid_,versionid_,wfid_);	
 
 raise notice '% - Step abentityrating_idx - part a end', clock_timestamp(); 
 END IF;
@@ -5858,7 +5852,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step abonlist - part a end', clock_timestamp();
 
-
 --ProbabilityOfDefault
 raise notice '% - Step abprobabilityofdefault - part a start', clock_timestamp();
 
@@ -5879,7 +5872,6 @@ delete from olapts.refreshhistory where tablename = 'ABPROBABILITYOFDEFAULT';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABPROBABILITYOFDEFAULT' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abprobabilityofdefault - part a end', clock_timestamp();
-
 
 --RatingScenarioType
 raise notice '% - Step abratingscenariotype - part a start', clock_timestamp();
@@ -6048,7 +6040,6 @@ delete from olapts.refreshhistory where tablename = 'ABBUSINESSACTIVITY';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABBUSINESSACTIVITY' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abbusinessactivity - part a end', clock_timestamp();
-
 
 --BuildingCondition
 raise notice '% - Step abbuildingcondition - part a start', clock_timestamp();
@@ -6314,7 +6305,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 raise notice '% - Step abtechnology - part a end', clock_timestamp();
 --End Model C Category lookup
 
-
 --Shipping Scorecard New lookup
 --AbilityToManageSp
 raise notice '% - Step ababilitytomanagesp - part a start', clock_timestamp();
@@ -6338,7 +6328,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step ababilitytomanagesp - part a end', clock_timestamp();
 
-
 --AssetControlSp
 raise notice '% - Step abassetcontrolsp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.abassetcontrolsp;
@@ -6360,7 +6349,6 @@ delete from olapts.refreshhistory where tablename = 'ABASSETCONTROLSP';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABASSETCONTROLSP' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abassetcontrolsp - part a end', clock_timestamp();
-
 
 --CapabilityToreMarketSp
 raise notice '% - Step abcapabilitytoremarketsp - part a start', clock_timestamp();
@@ -6384,7 +6372,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step abcapabilitytoremarketsp - part a end', clock_timestamp();
 
-
 --ContractStructureSp
 raise notice '% - Step abcontractstructuresp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.abcontractstructuresp;
@@ -6406,7 +6393,6 @@ delete from olapts.refreshhistory where tablename = 'ABCONTRACTSTRUCTURESP';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABCONTRACTSTRUCTURESP' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abcontractstructuresp - part a end', clock_timestamp();
-
 
 --CooperationYearsSp
 raise notice '% - Step abcooperationyearssp - part a start', clock_timestamp();
@@ -6474,7 +6460,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step abcredithistorysp - part a end', clock_timestamp();
 
-
 --CurrentResaleValueSp
 raise notice '% - Step abcurrentresalevaluesp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.abcurrentresalevaluesp;
@@ -6496,7 +6481,6 @@ delete from olapts.refreshhistory where tablename = 'ABCURRENTRESALEVALUESP';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABCURRENTRESALEVALUESP' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abcurrentresalevaluesp - part a end', clock_timestamp();
-
 
 --DeadWeightTonnageSp
 raise notice '% - Step abdeadweighttonnagesp - part a start', clock_timestamp();
@@ -6520,7 +6504,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step abdeadweighttonnagesp - part a end', clock_timestamp();
 
-
 --DebtServiceCoverageRatioSp
 raise notice '% - Step abdebtservicecoverageratiosp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.abdebtservicecoverageratiosp;
@@ -6542,7 +6525,6 @@ delete from olapts.refreshhistory where tablename = 'ABDEBTSERVICECOVERAGERATIOS
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABDEBTSERVICECOVERAGERATIOSP' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abdebtservicecoverageratiosp - part a end', clock_timestamp();
-
 
 --ExternalPaymentBahaviorSp
 raise notice '% - Step abexternalpaymentbahaviorsp - part a start', clock_timestamp();
@@ -6566,7 +6548,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step abexternalpaymentbahaviorsp - part a end', clock_timestamp();
 
-
 --FinanceVesselsSp
 raise notice '% - Step abfinancevesselssp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.abfinancevesselssp;
@@ -6588,7 +6569,6 @@ delete from olapts.refreshhistory where tablename = 'ABFINANCEVESSELSSP';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABFINANCEVESSELSSP' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abfinancevesselssp - part a end', clock_timestamp();
-
 
 --FinancialtermsSp
 raise notice '% - Step abfinancialtermssp - part a start', clock_timestamp();
@@ -6678,7 +6658,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step ablegislativeregulatoryrisksp - part a end', clock_timestamp();
 
-
 --LiquidationTimeObjectSp
 raise notice '% - Step abliquidationtimeobjectsp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.abliquidationtimeobjectsp;
@@ -6700,7 +6679,6 @@ delete from olapts.refreshhistory where tablename = 'ABLIQUIDATIONTIMEOBJECTSP';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABLIQUIDATIONTIMEOBJECTSP' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abliquidationtimeobjectsp - part a end', clock_timestamp();
-
 
 --LtvSp
 raise notice '% - Step abltvsp - part a start', clock_timestamp();
@@ -6724,7 +6702,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step abltvsp - part a end', clock_timestamp();
 
-
 --MarketStructureSp
 raise notice '% - Step abmarketstructuresp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.abmarketstructuresp;
@@ -6746,7 +6723,6 @@ delete from olapts.refreshhistory where tablename = 'ABMARKETSTRUCTURESP';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABMARKETSTRUCTURESP' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abmarketstructuresp - part a end', clock_timestamp();
-
 
 --OperatingYearsSp
 raise notice '% - Step aboperatingyearssp - part a start', clock_timestamp();
@@ -6770,7 +6746,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step aboperatingyearssp - part a end', clock_timestamp();
 
-
 --OperatorsTrackSp
 raise notice '% - Step aboperatorstracksp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.aboperatorstracksp;
@@ -6793,7 +6768,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step aboperatorstracksp - part a end', clock_timestamp();
 
-
 --ParentalSupportSp
 raise notice '% - Step abparentalsupportsp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.abparentalsupportsp;
@@ -6815,7 +6789,6 @@ delete from olapts.refreshhistory where tablename = 'ABPARENTALSUPPORTSP';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABPARENTALSUPPORTSP' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step abparentalsupportsp - part a end', clock_timestamp();
-
 
 --PermitsLicensingSp
 raise notice '% - Step abpermitslicensingsp - part a start', clock_timestamp();
@@ -6905,8 +6878,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step abrightsandmeanssp - part a end', clock_timestamp();
 
-
-
 --SensitivityOfTheAssetSp
 raise notice '% - Step absensitivityoftheassetsp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.absensitivityoftheassetsp;
@@ -6951,7 +6922,6 @@ insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'AB
 
 raise notice '% - Step absuccessionplansp - part a end', clock_timestamp();
 
-
 --SupplyandDemandSp
 raise notice '% - Step absupplyanddemandsp - part a start', clock_timestamp();
 DROP TABLE IF EXISTS olapts.absupplyanddemandsp;
@@ -6973,7 +6943,6 @@ delete from olapts.refreshhistory where tablename = 'ABSUPPLYANDDEMANDSP';
 insert into olapts.refreshhistory(tablename,asofdate,prevsuccessdate) select 'ABSUPPLYANDDEMANDSP' tablename, current_setting('myvariables.popdate')::timestamp as  asofdate,varprevsuccessdate;
 
 raise notice '% - Step absupplyanddemandsp - part a end', clock_timestamp();
-
 
 --TotalIncomeTotalOperatingExpensesSp
 raise notice '% - Step abtotalincometotaloperatingexpensessp - part a start', clock_timestamp();
@@ -7001,7 +6970,6 @@ raise notice '% - Step abtotalincometotaloperatingexpensessp - part a end', cloc
 
 -- End Lookup Tables
 END $$;
-
 
 --ABFACTBANKSYSTEM
 DO $$
@@ -7085,7 +7053,8 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTBANKSYSTEM
 		,dbp.businessportfoliovalue::varchar(50) as "AccessGroup" 
 		,(frs.jsondoc_ ->> 'ModelId')::varchar(50) as "IRTModel"
 		,(fe.jsondoc_ ->> 'ResponsibleOffice')::varchar(50) as "RespOffice"
-		,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer"
+		--,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer" 
+	    ,(lookup.jsondoc_ ->> 'Value')::varchar(50) as "RespOfficer"   
 		,(fe.jsondoc_ ->> 'CreditCommittee')::varchar(50) as "CreditCommittee"
 		,(fe.jsondoc_ ->> 'ReviewType')::varchar(50) as "Reviewtype"
 		,(fe.jsondoc_ ->> 'GroupId')::varchar(50) as "GroupCode"
@@ -7100,6 +7069,8 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTBANKSYSTEM
 		inner join madata.entity fe
 		on fe.pkid_ = frs.fkid_entity and fe.isvisible_ and fe.isvalid_ 
 		and coalesce(fe.updateddate_, fe.createddate_) < (frs.jsondoc_ ->> 'ApprovedDate')::timestamp
+        left join madata.custom_lookup lookup                              
+        on fe.jsondoc_ ->> 'ResponsibleOfficer' = lookup.jsondoc_->>'Key'  		
 		left join olapts.abfactbanksystem fbs
 		on fbs."Seq_NO" = frs.jsondoc_ ->> 'ApproveId'	
 		left join madata.financial df
@@ -7317,8 +7288,9 @@ ELSE
 		,dft.name::varchar(50) as "MFA_Model"
 		,dbp.businessportfoliovalue::varchar(50) as "AccessGroup" 
 		,(frs.jsondoc_ ->> 'ModelId')::varchar(50) as "IRTModel"
-		,(fe.jsondoc_ ->> 'ResponsibleOffice')::varchar(50) as "RespOffice"
-		,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer"
+		,(fe.jsondoc_ ->> 'ResponsibleOffice')::varchar(50) as "RespOffice"	
+		--,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer" 
+	    ,(lookup.jsondoc_ ->> 'Value')::varchar(50) as "RespOfficer"   
 		,(fe.jsondoc_ ->> 'CreditCommittee')::varchar(50) as "CreditCommittee"
 		,(fe.jsondoc_ ->> 'ReviewType')::varchar(50) as "Reviewtype"
 		,(fe.jsondoc_ ->> 'GroupId')::varchar(50) as "GroupCode"
@@ -7333,6 +7305,8 @@ ELSE
 		inner join madata.entity fe
 		on fe.pkid_ = frs.fkid_entity and fe.isvisible_ and fe.isvalid_ 
 		and coalesce(fe.updateddate_, fe.createddate_) < (frs.jsondoc_ ->> 'ApprovedDate')::timestamp
+        left join madata.custom_lookup lookup                              
+        on fe.jsondoc_ ->> 'ResponsibleOfficer' = lookup.jsondoc_->>'Key'  				
 		left join olapts.abfactbanksystem fbs
 		on fbs."Seq_NO" = frs.jsondoc_ ->> 'ApproveId'	
 		left join madata.financial df
@@ -7509,7 +7483,6 @@ where GREATEST(mi.updateddate_,mi.createddate_) > (select COALESCE(max(asofdate)
 and GREATEST(mi.updateddate_,mi.createddate_)::timestamp <=  current_setting('myvariables.popdate')::timestamp
 and mi.t_ = 'PdModelShippingScorecard'
 ;
-
 
 raise notice '% - Step abmodelshippingscorecard - part a end', clock_timestamp();
 ELSE
@@ -8306,7 +8279,6 @@ raise notice '% - Step abpdmodelccategory - part c end', clock_timestamp();
 END $$;
 -- End Custom MAP Models -  New Rating model 2: "Model C Category" (Id: PdModelCcategory)
 
-
 --abrs_export_new
 CREATE OR REPLACE VIEW olapts.abrs_export_new AS
  SELECT 
@@ -8469,7 +8441,6 @@ CREATE INDEX IF NOT EXISTS dimpeeranalysislatest_idx_gin ON olapts.dimpeeranalys
 CREATE INDEX IF NOT EXISTS dimpeeranalysislatest_idx_dimpeeranalysisid_hash ON olapts.dimpeeranalysislatest USING hash (dimpeeranalysislatestid_);
 CREATE INDEX IF NOT EXISTS dimpeeranalysislatest_idx_date_brin ON olapts.dimpeeranalysislatest USING BRIN (sourcepopulateddate_);
 CREATE INDEX IF NOT EXISTS dimpeeranalysislatest_idx_btree ON olapts.dimpeeranalysislatest (dimpeeranalysislatestid_,pkid_,versionid_,sourcepopulateddate_) include (financialid,peerdatabaseid,peersic,isdeleted_,isvalid_,isvisible_,createdby_,createddate_,updatedby_,updateddate_,sourcepopulatedby_,wfid_);
-
 
 --factuphiststmtfinancial
 CREATE INDEX IF NOT EXISTS factuphiststmtfinancial_idx_pkid_gin ON olapts.factuphiststmtfinancial USING GIN (factuphiststmtfinancialid_,pkid_,versionid_,wfid_);

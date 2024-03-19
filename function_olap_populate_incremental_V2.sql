@@ -1,9 +1,12 @@
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+--                                                   Run script in OLAP database 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
 -- FUNCTION: olapts.populate_olap_incremental()
 
 -- DROP FUNCTION olapts.populate_olap_incremental();
 
-CREATE OR REPLACE FUNCTION olapts.populate_olap_incremental(
-	)
+CREATE OR REPLACE FUNCTION olapts.populate_olap_incremental()
     RETURNS boolean
     LANGUAGE 'plpgsql'
     COST 100
@@ -29,9 +32,14 @@ begin
 -- IMPORT FOREIGN SCHEMA tenant LIMIT TO (ratingscenarioblockdata) FROM SERVER matenantserver INTO madata;
 
 --enable remote estimate
-ALTER FOREIGN TABLE madata.historicalstatement OPTIONS ( set fetch_size '100',set use_remote_estimate 'on' );
-ALTER FOREIGN TABLE madata.ratingscenarioblockdata OPTIONS ( set fetch_size '100',set use_remote_estimate 'on' );
+--ALTER FOREIGN TABLE madata.historicalstatement OPTIONS ( set fetch_size '100',set use_remote_estimate 'on' ); --comment suggested by DSP 
+--ALTER FOREIGN TABLE madata.ratingscenarioblockdata OPTIONS ( set fetch_size '100',set use_remote_estimate 'on' ); --comment suggested by DSP
 
+--Call function imports_and_fetch_size suggested by DSP
+raise notice '% - Step imports_and_fetch_size - part a start', clock_timestamp(); 
+PERFORM olapts.imports_and_fetch_size();
+raise notice '% - Step imports_and_fetch_size - part a end', clock_timestamp(); 
+	
 -- Increase work memory and effective cache for complex operations/sorts
 set work_mem = '10 GB';
 set maintenance_work_mem = '10 GB';
@@ -866,7 +874,8 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTENTITY') T
 	jsondoc_->>'ProvinceStateOfIncorporation' provincestateofincorporation,
 	jsondoc_->>'EnterpriseValueToTotalDebt' enterprisevaluetototaldebt,
 	jsondoc_->>'ExpiryDate' expirydate,
-	jsondoc_->>'ValuationMethodology' valuationmethodology,																								
+	jsondoc_->>'ValuationMethodology' valuationmethodology,
+	jsondoc_->>'Jurisdiction' jurisdiction,
 	--not in tenant
 	jsondoc_->>'Bankruptcy' bankruptcy,
 	jsondoc_->>'GovernmentBailoutOffirm' governmentbailoutoffirm,
@@ -887,8 +896,7 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTENTITY') T
 	islatestversion_::boolean,
 	t_ t_ ,
 	(case when e.updateddate_>e.createddate_ then e.updatedby_ else e.createdby_ end) as sourcepopulatedby_,
-	GREATEST(e.updateddate_,e.createddate_) as sourcepopulateddate_,
-	jsondoc_->>'Jurisdiction' jurisdiction
+	GREATEST(e.updateddate_,e.createddate_) as sourcepopulateddate_
 	from madata.entity e
 	where GREATEST(updateddate_,createddate_) > (select COALESCE(max(asofdate),to_timestamp(0)) from olapts.refreshhistory where tablename = 'ABFACTENTITY')
 	and GREATEST(updateddate_,createddate_)::timestamp <=  current_setting('myvariables.popdate')::timestamp
@@ -998,7 +1006,8 @@ ELSE
 	jsondoc_->>'ProvinceStateOfIncorporation' provincestateofincorporation,
 	jsondoc_->>'EnterpriseValueToTotalDebt' enterprisevaluetototaldebt,
 	jsondoc_->>'ExpiryDate' expirydate,
-	jsondoc_->>'ValuationMethodology' valuationmethodology,																						 
+	jsondoc_->>'ValuationMethodology' valuationmethodology,
+	jsondoc_->>'Jurisdiction' jurisdiction,	
 	--not in tenant
 	jsondoc_->>'Bankruptcy' bankruptcy,
 	jsondoc_->>'GovernmentBailoutOffirm' governmentbailoutoffirm,
@@ -1019,8 +1028,7 @@ ELSE
 	islatestversion_::boolean,
 	t_ t_ ,
 	(case when e.updateddate_>e.createddate_ then e.updatedby_ else e.createdby_ end) as sourcepopulatedby_,
-	GREATEST(e.updateddate_,e.createddate_) as sourcepopulateddate_,
-	jsondoc_->>'Jurisdiction' jurisdiction
+	GREATEST(e.updateddate_,e.createddate_) as sourcepopulateddate_
 	from madata.entity e
 	where GREATEST(updateddate_,createddate_) > (select COALESCE(max(asofdate),to_timestamp(0)) from olapts.refreshhistory where tablename = 'ABFACTENTITY')
 	and GREATEST(updateddate_,createddate_)::timestamp <=  current_setting('myvariables.popdate')::timestamp
@@ -4787,7 +4795,7 @@ DROP INDEX if exists olapts.abentityrating_idx;
 DROP INDEX if exists olapts.abentityrating_idx2;
 
 CREATE INDEX IF NOT EXISTS abentityrating_idx ON olapts.abentityrating (factentityratingid_,wfid_);
-CREATE INDEX IF NOT EXISTS abentityrating_idx2 ON olapts.abentityrating (pkid_,versionid_,wfid);	
+CREATE INDEX IF NOT EXISTS abentityrating_idx2 ON olapts.abentityrating (pkid_,versionid_,wfid_);	
 
 raise notice '% - Step abentityrating_idx - part a end', clock_timestamp(); 
 END IF;
@@ -7049,8 +7057,8 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTBANKSYSTEM
 		,dbp.businessportfoliovalue::varchar(50) as "AccessGroup" 
 		,(frs.jsondoc_ ->> 'ModelId')::varchar(50) as "IRTModel"
 		,(fe.jsondoc_ ->> 'ResponsibleOffice')::varchar(50) as "RespOffice"
-		--,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer" --ADDED 22/02
-	    ,(lookup.jsondoc_ ->> 'Value')::varchar(50) as "RespOfficer"   --ADDED 22/02	
+		--,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer" 
+	    ,(lookup.jsondoc_ ->> 'Value')::varchar(50) as "RespOfficer"   
 		,(fe.jsondoc_ ->> 'CreditCommittee')::varchar(50) as "CreditCommittee"
 		,(fe.jsondoc_ ->> 'ReviewType')::varchar(50) as "Reviewtype"
 		,(fe.jsondoc_ ->> 'GroupId')::varchar(50) as "GroupCode"
@@ -7065,8 +7073,8 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTBANKSYSTEM
 		inner join madata.entity fe
 		on fe.pkid_ = frs.fkid_entity and fe.isvisible_ and fe.isvalid_ 
 		and coalesce(fe.updateddate_, fe.createddate_) < (frs.jsondoc_ ->> 'ApprovedDate')::timestamp
-        left join madata.custom_lookup lookup                              --ADDED 22/02
-        on fe.jsondoc_ ->> 'ResponsibleOfficer' = lookup.jsondoc_->>'Key'  --ADDED 22/02		
+        left join madata.custom_lookup lookup                              
+        on fe.jsondoc_ ->> 'ResponsibleOfficer' = lookup.jsondoc_->>'Key'  		
 		left join olapts.abfactbanksystem fbs
 		on fbs."Seq_NO" = frs.jsondoc_ ->> 'ApproveId'	
 		left join madata.financial df
@@ -7284,10 +7292,9 @@ ELSE
 		,dft.name::varchar(50) as "MFA_Model"
 		,dbp.businessportfoliovalue::varchar(50) as "AccessGroup" 
 		,(frs.jsondoc_ ->> 'ModelId')::varchar(50) as "IRTModel"
-		,(fe.jsondoc_ ->> 'ResponsibleOffice')::varchar(50) as "RespOffice"
-		,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer"		
-		--,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer" --ADDED 22/02
-	    ,(lookup.jsondoc_ ->> 'Value')::varchar(50) as "RespOfficer"   --ADDED 22/02			
+		,(fe.jsondoc_ ->> 'ResponsibleOffice')::varchar(50) as "RespOffice"	
+		--,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer" 
+	    ,(lookup.jsondoc_ ->> 'Value')::varchar(50) as "RespOfficer"   
 		,(fe.jsondoc_ ->> 'CreditCommittee')::varchar(50) as "CreditCommittee"
 		,(fe.jsondoc_ ->> 'ReviewType')::varchar(50) as "Reviewtype"
 		,(fe.jsondoc_ ->> 'GroupId')::varchar(50) as "GroupCode"
@@ -7302,8 +7309,8 @@ ELSE
 		inner join madata.entity fe
 		on fe.pkid_ = frs.fkid_entity and fe.isvisible_ and fe.isvalid_ 
 		and coalesce(fe.updateddate_, fe.createddate_) < (frs.jsondoc_ ->> 'ApprovedDate')::timestamp
-        left join madata.custom_lookup lookup                              --ADDED 22/02
-        on fe.jsondoc_ ->> 'ResponsibleOfficer' = lookup.jsondoc_->>'Key'  --ADDED 22/02				
+        left join madata.custom_lookup lookup                              
+        on fe.jsondoc_ ->> 'ResponsibleOfficer' = lookup.jsondoc_->>'Key'  				
 		left join olapts.abfactbanksystem fbs
 		on fbs."Seq_NO" = frs.jsondoc_ ->> 'ApproveId'	
 		left join madata.financial df
@@ -8455,6 +8462,7 @@ CREATE INDEX IF NOT EXISTS facthiststmtbalancelatest_idx_date_brin ON olapts.fac
 CREATE INDEX IF NOT EXISTS facthiststmtbalancelatest_idx_pkid_btree_ops ON olapts.facthiststmtbalancelatest ((facthiststmtbalancelatestid_) varchar_pattern_ops,(pkid_),financialid,statementid,accountid,sourcepopulateddate_) include (versionid_,originrounding,historicalstatementid_,isdeleted_,isvalid_,islatestversion_,isvisible_,sourcepopulatedby_,createdby_,createddate_,updatedby_,updateddate_,wfid_);
 ----legacy indexes end----
 
+
 ---------------
 pl_status:=TRUE;
 RETURN pl_status;
@@ -8462,5 +8470,9 @@ RETURN pl_status;
 end;
 $BODY$;
 
-ALTER FUNCTION olapts.populate_olap_incremental()
-    OWNER TO olap;
+ALTER FUNCTION olapts.populate_olap_incremental() OWNER TO olap;
+
+-------------------------------------------------------------
+--Check if the function was created and table was populated
+-------------------------------------------------------------
+--select * from olapts.populate_olap_incremental()

@@ -7065,7 +7065,8 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTBANKSYSTEM
 		,dbp.businessportfoliovalue::varchar(50) as "AccessGroup" 
 		,(frs.jsondoc_ ->> 'ModelId')::varchar(50) as "IRTModel"
 		,(fe.jsondoc_ ->> 'ResponsibleOffice')::varchar(50) as "RespOffice"
-		,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer"
+		--,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer" --ADDED 22/02
+	    ,(lookup.jsondoc_ ->> 'Value')::varchar(50) as "RespOfficer"   --ADDED 22/02		
 		,(fe.jsondoc_ ->> 'CreditCommittee')::varchar(50) as "CreditCommittee"
 		,(fe.jsondoc_ ->> 'ReviewType')::varchar(50) as "Reviewtype"
 		,(fe.jsondoc_ ->> 'GroupId')::varchar(50) as "GroupCode"
@@ -7080,6 +7081,8 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTBANKSYSTEM
 		inner join madata.entity fe
 		on fe.pkid_ = frs.fkid_entity and fe.isvisible_ and fe.isvalid_ 
 		and coalesce(fe.updateddate_, fe.createddate_) < (frs.jsondoc_ ->> 'ApprovedDate')::timestamp
+        left join madata.custom_lookup lookup                              --ADDED 22/02
+        on fe.jsondoc_ ->> 'ResponsibleOfficer' = lookup.jsondoc_->>'Key'  --ADDED 22/02		
 		left join olapts.abfactbanksystem fbs
 		on fbs."Seq_NO" = frs.jsondoc_ ->> 'ApproveId'	
 		left join madata.financial df
@@ -7298,7 +7301,8 @@ ELSE
 		,dbp.businessportfoliovalue::varchar(50) as "AccessGroup" 
 		,(frs.jsondoc_ ->> 'ModelId')::varchar(50) as "IRTModel"
 		,(fe.jsondoc_ ->> 'ResponsibleOffice')::varchar(50) as "RespOffice"
-		,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer"
+		--,(fe.jsondoc_ ->> 'ResponsibleOfficer')::varchar(50) as "RespOfficer" --ADDED 22/02
+	    ,(lookup.jsondoc_ ->> 'Value')::varchar(50) as "RespOfficer"   --ADDED 22/02	
 		,(fe.jsondoc_ ->> 'CreditCommittee')::varchar(50) as "CreditCommittee"
 		,(fe.jsondoc_ ->> 'ReviewType')::varchar(50) as "Reviewtype"
 		,(fe.jsondoc_ ->> 'GroupId')::varchar(50) as "GroupCode"
@@ -7313,6 +7317,8 @@ ELSE
 		inner join madata.entity fe
 		on fe.pkid_ = frs.fkid_entity and fe.isvisible_ and fe.isvalid_ 
 		and coalesce(fe.updateddate_, fe.createddate_) < (frs.jsondoc_ ->> 'ApprovedDate')::timestamp
+        left join madata.custom_lookup lookup                              --ADDED 22/02
+        on fe.jsondoc_ ->> 'ResponsibleOfficer' = lookup.jsondoc_->>'Key'  --ADDED 22/02		
 		left join olapts.abfactbanksystem fbs
 		on fbs."Seq_NO" = frs.jsondoc_ ->> 'ApproveId'	
 		left join madata.financial df
