@@ -1,5 +1,3 @@
-Scripts to Sent in UAT1 with full tenant
-
 1.	[ALTER TABLE ABLEVERAGEINDICATION.sql]
 Προσθήκη πεδίων leverageownedbyasponsor, LeverageSponsorName, createduser στον υπάρχον πίνακα 
 2.	[ALTER TABLE ABUTP.sql]
