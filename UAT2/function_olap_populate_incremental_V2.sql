@@ -1,13 +1,10 @@
--- FUNCTION: olapts.populate_olap_incremental()
-
--- DROP FUNCTION olapts.populate_olap_incremental();
-
-CREATE OR REPLACE FUNCTION olapts.populate_olap_incremental(
-	)
+CREATE OR REPLACE FUNCTION olapts.populate_olap_incremental()
     RETURNS boolean
     LANGUAGE 'plpgsql'
+    VOLATILE
+    PARALLEL UNSAFE
     COST 100
-    VOLATILE PARALLEL UNSAFE
+    
 AS $BODY$
 declare
  pl_status boolean:=FALSE;
@@ -8196,7 +8193,7 @@ on l11.t_ = 'TrueFalse'
 and l11.jsondoc_->>'Key' = mi.jsondoc_ ->> 'Miss'
 left join madata.custom_lookup l12
 on l12.t_ = 'TrueFalse'
-and l9.jsondoc_->>'Key' = mi.jsondoc_ ->> 'OwnershipDeliq'
+and l12.jsondoc_->>'Key' = mi.jsondoc_ ->> 'OwnershipDeliq'
 left join madata.custom_lookup l13
 on l13.t_ = 'ProductsAndServices'
 and l13.jsondoc_->>'Key' = mi.jsondoc_ ->> 'ProductsAndServices'
@@ -8473,6 +8470,3 @@ RETURN pl_status;
 
 end;
 $BODY$;
-
-ALTER FUNCTION olapts.populate_olap_incremental()
-    OWNER TO olap;
