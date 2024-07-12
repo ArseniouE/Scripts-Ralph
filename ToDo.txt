@@ -1,0 +1,7 @@
+Για uat1 -> 
+OriginalModelGrade | ΕntityRating
+OriginalGrade | RatingScenario
+ 
+Για dev ->
+πεδιο DwhCode σε OprOperatingRiskTriggers OprOperatingRiskNonTriggers
+ 
