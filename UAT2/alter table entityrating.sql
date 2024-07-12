@@ -19,8 +19,8 @@ select * from olapts.abentityrating;
 --=================================================
 -------DROP OLD abentityrating-----------------------
 --=================================================
-
-DROP TABLE IF EXISTS olapts.abentityrating;
+--***uncomment row 23 after the backup of table***
+--DROP TABLE IF EXISTS olapts.abentityrating;
 
 --=================================================
 --CREATE NEW abentityrating--------------------------
