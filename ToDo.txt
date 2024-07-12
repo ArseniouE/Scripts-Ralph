@@ -3,5 +3,5 @@ OriginalModelGrade | ΕntityRating
 OriginalGrade | RatingScenario
  
 Για dev ->
-πεδιο DwhCode σε OprOperatingRiskTriggers OprOperatingRiskNonTriggers
+πεδιο DwhCode σε OprOperatingRiskTriggers OprOperatingRiskNonTriggers --done 12/07/2024
  
