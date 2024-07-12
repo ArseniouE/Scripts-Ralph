@@ -14,14 +14,16 @@ select * from olapts.abratingscenario;
 --=================================================
 --select * from olapts.abratingscenario_backup limit 100
 
---=================================================
--------DROP OLD abratingscenario-----------------------
---=================================================
-
-DROP TABLE IF EXISTS olapts.abratingscenario;
 
 --=================================================
---CREATE NEW abratingscenario--------------------------
+-------DROP OLD abratingscenario-------------------
+--=================================================
+
+--***uncomment row 23 after the backup of table***
+--DROP TABLE IF EXISTS olapts.abratingscenario;
+
+--=================================================
+--CREATE NEW abratingscenario----------------------
 --=================================================
 CREATE TABLE IF NOT EXISTS olapts.abratingscenario
 (
