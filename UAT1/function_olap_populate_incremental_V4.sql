@@ -872,7 +872,7 @@ IF EXISTS (select from olapts.refreshhistory where tablename = 'ABFACTENTITY') T
 	e.jsondoc_->>'EnterpriseValueToTotalDebt' enterprisevaluetototaldebt,
 	e.jsondoc_->>'ExpiryDate' expirydate,
 	e.jsondoc_->>'ValuationMethodology' valuationmethodology,
-	--jsondoc_->>'Jurisdiction' jurisdiction,
+	e.jsondoc_->>'Jurisdiction' jurisdiction,
 	--not in tenant
 	e.jsondoc_->>'Bankruptcy' bankruptcy,
 	e.jsondoc_->>'GovernmentBailoutOffirm' governmentbailoutoffirm,
@@ -1055,7 +1055,7 @@ ELSE
 	e.jsondoc_->>'EnterpriseValueToTotalDebt' enterprisevaluetototaldebt,
 	e.jsondoc_->>'ExpiryDate' expirydate,
 	e.jsondoc_->>'ValuationMethodology' valuationmethodology,
-	--jsondoc_->>'Jurisdiction' jurisdiction,	
+	e.jsondoc_->>'Jurisdiction' jurisdiction,	
 	--not in tenant
 	e.jsondoc_->>'Bankruptcy' bankruptcy,
 	e.jsondoc_->>'GovernmentBailoutOffirm' governmentbailoutoffirm,

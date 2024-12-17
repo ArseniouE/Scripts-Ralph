@@ -4924,6 +4924,7 @@ CREATE TABLE olapts.aboperatingrisknontriggers AS
 	l.jsondoc_->>'Key' aboperatingrisknontriggerskey_,
 	l.jsondoc_->>'Value' aboperatingrisknontriggersvalue_,
 	l.jsondoc_->>'Order' aboperatingrisknontriggersorder_,
+        l.jsondoc_->>'DwhCode' aboperatingrisknontriggersdwhcode_, 	  --added 2024-10-11
 	isdeleted_,
 	t_ t_,
 	(case when updateddate_>createddate_ then updatedby_ else createdby_ end) as sourcepoopulatedby_,
@@ -4945,6 +4946,7 @@ CREATE TABLE olapts.aboperatingrisktriggers AS
 	l.jsondoc_->>'Key' aboperatingrisktriggerskey_,
 	l.jsondoc_->>'Value' aboperatingrisktriggersvalue_,
 	l.jsondoc_->>'Order' aboperatingrisktriggersorder_,
+        l.jsondoc_->>'DwhCode' aboperatingrisktriggersdwhcode_,  --added 2024-10-11	
 	isdeleted_,
 	t_ t_,
 	(case when updateddate_>createddate_ then updatedby_ else createdby_ end) as sourcepoopulatedby_,
