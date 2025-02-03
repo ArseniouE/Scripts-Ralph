@@ -114,7 +114,7 @@ INSERT INTO olapts.abratingscenario(
 	select 
 	factratingscenarioid_, pkid_, ratingscenarioid, versionid_, entityid, originalfinancialcontext, financialcontext, financialid, financialversionid, peeranalysis_version_match, entity_version_match, projection_version_match, stmts_versions_, name, originalgrade, scenariotyperef, amuser, ratingstatus, nextreviewdate, creditcommitteedate, modelid, isprimary, finalgrade, finalscore, modelgrade, modelpd, approveddate, mastergrade, statementcount, lateststatementid, overridegrade, overridepd, approveid, approver, islatestapprovedscenario, approvalstatus, configversion, isapproved, modelinputschanged, masteroverridegrade, masteroverridepd, selectedfinancialid, masterpd, modelversion, overlaypd, overlayrating, projectionid, proposedrating, usedfinancial, parentid, parentname, extendedreviewdate, expirationdate, revivalid,
 	prevratingid, wfid_, taskid_, snapshotid_, contextuserid_, createdby_, createddate_, updatedby_, updateddate_, isvalid_, isdeleted_, isvisible_, islatestversion_, t_, baseversionid_, statusid_, sourcepopulatedby_, sourcepopulateddate_
-		from olapts.abfactentity_backup
+		from olapts.abratingscenario_backup
 	
 	
 	--=================================================
