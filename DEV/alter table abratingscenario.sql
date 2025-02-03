@@ -3,7 +3,7 @@
 --==========================================
 	
 ALTER TABLE olapts.abratingscenario
-ADD     COLUMN prevratingid text
+ADD     COLUMN prevratingid text,
 ADD     COLUMN revivalid text;	;	
 
 --=================================================
